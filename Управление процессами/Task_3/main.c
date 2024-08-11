@@ -1,39 +1,29 @@
-/* Аналог командного интерпритатора bash. */
-/* Программа использует функцию execlp, которая в качестве первого аргумента
- * принимает имя введенной команды и ищет ее расположение в системных путях
- * установленных с помощью переменной окружения PATH. Второй аргумент имя программы, 
- * третий - опции программы */
- 
-#include "main.h"
+/* Аналог bash.
+ * Пользователь вводит команду с аргументами,
+ * она разбивается на лексемы, которые передаются в качестве 
+ * аргументов функции execlp, которая расположена в функции my_bash() 
+ * выход из программы с помощью "quit"*/
+
+#include "main.h" 
 
 int main(){
+	char str_comm[256];
+	int i;
 	while (TRUE){
 		printf("bh# ");
-		if ((ch = getchar()) == 'q'){
-            exit(EXIT_SUCCESS);
-        }
-		ungetc(ch, stdin);
-		scanf("%s%s", comm, arg);
-		child = fork();
-		switch(child){
-			case -1:
-				err = strerror(errno);
-                printf("%s", err);
-                exit(EXIT_FAILURE);
-			case 0:
-				ret_exe = execlp(comm, comm, arg, NULL);
-            	if (ret_exe == -1){
-                	err = strerror(errno);
-                	printf("%s", err);
-                	exit(EXIT_FAILURE);
-            	}
-            	exit(1);
-			default:
-				waitpid(child, &status, 0);
-	            printf("Status %d\n", WIFEXITED(status));
+/* считываем то что ввел пользователь */
+		fgets(str_comm, 256, stdin);
+/* разбиваем пользовательскую строку на лексемы, которые затем 
+ * в виде строки передаются в качестве аргументов функции execlp, так же
+ * проверяется условие на выход из программы
+ * и условие использование процесса с каналом или без него */
+		comm = strtok(str_comm, " \n");
+/* условие, если нужно выйти */
+		if (!strcmp(comm, "quit")){
+			exit(EXIT_SUCCESS);
 		}
-		while(getchar() != '\n'){
-			continue;
-		}
+        arg = strtok(NULL, " \n");
+/* вызываем функцию my_bash() в которой запускаем процесс */
+	my_bash();
 	}
 }

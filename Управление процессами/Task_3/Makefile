@@ -1,8 +1,11 @@
-obj = main.o
-task_3: $(obj)
-	gcc $(obj) -o task_3
+OBJ = main.o process.o
+task_3: $(OBJ)
+	gcc $(OBJ) -o task_3
 main.o: main.c
 	gcc -c main.c
+process.o: process.c
+	gcc -c process.c
 .PHONY: clean
 clean:
-	rm main.o task_3
+	rm -rf $(OBJ) task_3
+

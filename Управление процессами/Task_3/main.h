@@ -7,9 +7,9 @@
 #include <string.h>
 #include <errno.h>
 
-pid_t child;
-int status, ret_exe;
-char comm[10];
-char arg[10];
-char ch;
-char *err;  
+char *comm;
+char *arg;
+char *comm_p;
+char *arg_p;
+
+void my_bash();
