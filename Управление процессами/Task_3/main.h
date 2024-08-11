@@ -9,7 +9,6 @@
 
 char *comm;
 char *arg;
-char *comm_p;
-char *arg_p;
+
 
 void my_bash();
