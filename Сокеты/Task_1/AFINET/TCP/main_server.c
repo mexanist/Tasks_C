@@ -8,16 +8,16 @@ int main(){
 		perror("create socket failure");
 		exit(EXIT_FAILURE);
 	}
-/* Формируем структуру sockaddr in сервера, сначала переводим адрес как строку в двоичное представление,
- * затем переводим к сетевому порядку следования байтов по сети */
+/* Формируем структуру sockaddr in сервера
+ * Функция inet_pton возвращает адрес уже в сетевом порядке */
 	inet_pton(AF_INET, "127.0.0.1", &serv_in_addr);
-	serv_in_addr.s_addr = htonl(serv_in_addr.s_addr);
 	addr.sin_family = AF_INET;
+/* Сетевой порядок для порта */
 	addr.sin_port = htons(SERV_PORT);
-	addr.sin_addr.s_addr = htonl(serv_in_addr.s_addr);//inet_addr("127.0.0.1");
+	addr.sin_addr.s_addr = serv_in_addr.s_addr;
 /* Привязываем сокет к адресу */
 	if (bind(s_fd, (struct sockaddr *) &addr, sizeof(struct sockaddr_in)) == -1){
-		perror("bind socket failure");
+		perror("Server bind socket failure");
 		exit(EXIT_FAILURE);
 	}
 /* Делает потоковый сокет, на который указывает s_fd, пассивным. Используется для приема соединений 
@@ -47,12 +47,9 @@ int main(){
 	write(c_fd, buf, strlen(buf));
 /* Т.к. структура адреса клиента больше не нужна, то переводим IP адрес и номер порта
  * из сетевого порядка в порядок представления данных в архитектуре х86, 
- * затем представляем их в презентационном виде и выводим на экран */
-	addr_cl.sin_port = ntohs(SERV_PORT);
-	addr_cl.sin_addr.s_addr = ntohl(addr_cl.sin_addr.s_addr);
-	inet_ntop(AF_INET, (struct sockaddr *)&addr_cl, buf_ntop_ip, BUF_SIZE);
+ * затем представляем их в презентационном виде с помощью inet_ntop для IP адреса
+ * и ntohs для порта и выводим на экран */
+	addr_cl.sin_port = ntohs(addr_cl.sin_port);
+	inet_ntop(AF_INET, &addr_cl.sin_addr, buf_ntop_ip, BUF_SIZE);
 	printf("IP address of client: %s\nPort of client: %d\n", buf_ntop_ip, addr_cl.sin_port);
-/* Закрываем сокеты */
-	close(c_fd);
-	close(s_fd);
 }
